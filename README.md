@@ -1,189 +1,207 @@
-🚀 AWS Career Guide – GenAI Powered Career Copilot
+🚀 AI Resume Generator – Career Copilot
 
-A full-stack Generative AI career assistant built on AWS, designed for students and professionals to prepare for jobs using secure authentication, AI-driven interview coaching, resume verification, and resume creation.
+This project is a Generative AI–powered Resume Builder that automatically creates ATS-friendly PDF resumes based on user inputs.
+It uses a Streamlit frontend, a serverless AWS backend, and AI content generation via Amazon Bedrock.
 
-This project uses Amazon Bedrock, Amazon Rekognition, Amazon Textract, and AWS S3 to deliver an end-to-end personalized career preparation platform.
+Users simply enter their details → The system generates → A downloadable PDF resume is instantly created and stored in S3.
 
-🌟 Key Features
-1. 🔐 Secure Face-Based Login
+⭐ Features (Exactly Your Project)
+1️⃣ Streamlit Frontend (Corporate UI)
 
-Technology: Amazon Rekognition
+Clean, professional design
 
-Functionality: Matches a live selfie with a stored reference image.
+Gradient corporate background
 
-Security: Ensures login is restricted to the registered user only.
+Card-based form layout
 
-Prevents impersonation and enhances identity security.
+User inputs:
 
-2. 🤖 AI Interview Coach
+Name
 
-Powered by Amazon Bedrock (Claude / Titan)
-Supports multiple modes:
+Email
 
-Technical Interview → Role-specific coding & cloud questions
+Phone
 
-DSA Mode → Questions on Data Structures & Algorithms
+Summary
 
-HR Mode → Behavioral, teamwork, and communication questions
+Skills
 
-Mock Interview Mode
+Education
 
-User types answers
+Projects
 
-AI gives instant feedback on:
-✓ Correctness
-✓ Clarity
-✓ Completeness
-✓ Improvement suggestions
+Certifications
 
-3. 📄 Document Verification
+2️⃣ AI Resume Generation (Amazon Bedrock)
 
-Technology: Amazon Textract + Bedrock reasoning
+Takes user inputs
 
-Features:
+Enhances content using AI
 
-OCR extraction from resumes, marksheets, degrees
+Produces professional, HR-friendly resume sections
 
-Intelligent name-matching using chain-of-thought reasoning
+Ensures ATS-optimized writing (clear structure, bullet points, no images)
 
-Validates document consistency
+3️⃣ PDF Generation (pdfgen.py)
 
-Generates a Credibility Score for the user
+Converts AI-generated text → Beautiful PDF
 
-Ensures authenticity of academic documents.
+Uses simple, ATS-safe formatting
 
-4. 📑 AI Resume Builder
+Handles:
 
-Technology: Amazon Bedrock
+Line spacing
 
-Converts user details into a professional, ATS-friendly resume
+Font formatting
 
-Supports multiple formats and job roles
+Section separators
 
-🛠️ Tech Stack
-Frontend
+4️⃣ AWS Lambda Backend
 
-Next.js 15
+Your Lambda performs the pipeline:
 
-React 19
+Receive user input
 
-Tailwind CSS
+Call Bedrock for AI content
 
-Framer Motion
+Generate PDF using pdfgen.py
 
-Backend
+Upload final PDF to S3
 
-Next.js API Routes (Serverless Architecture)
+Return a resume download URL to Streamlit
 
-AWS Services
+5️⃣ Amazon S3 Storage
 
-Rekognition → Face login
+Stores generated PDF safely
 
-Bedrock → Interview, feedback, resume generation
+Provides public or presigned URL for download
 
-Textract → Document extraction
+Files named dynamically using username
 
-S3 → Secure storage (images / documents)
+🏗️ Architecture Overview
+Streamlit UI (User Form)
+        ↓
+API Gateway
+        ↓
+AWS Lambda (lambda_function.py)
+        ↓
+Bedrock (AI Text Generation)
+        ↓
+pdfgen.py (PDF Creator)
+        ↓
+Amazon S3 (Stores Resume)
+        ↓
+Streamlit (Download Resume Link)
 
-Libraries
-
-@aws-sdk/client-*
-
-lucide-react
-
-framer-motion
+📂 Project Structure
+career-copilot-resume/
+│
+├── backend/
+│   ├── lambda_function.py        # Main Lambda logic
+│   ├── bedrock_client.py         # Bedrock API call logic
+│   ├── pdfgen.py                 # Converts AI output into PDF
+│   ├── utils.py                  # Helper functions
+│   ├── requirements.txt          # Python libs for Lambda
+│   └── resume_lambda.zip         # Deployment package
+│
+├── frontend/
+│   └── streamlit_app.py          # UI and API request handler
+│
+├── deploy/
+│   └── template.yaml             # (Optional) SAM deployment file
+│
+└── README.md
 
 ⚙️ Setup Instructions
-Prerequisites
-
-Node.js 18+
-
-AWS Account with enabled access to:
-
-Bedrock
-
-Rekognition
-
-Textract
-
-S3
-
-AWS CLI configured (optional)
-
-1. Clone the Repository
+🛠️ 1. Clone the Repository
 git clone <your-repo-url>
-cd carreerguide
+cd career-copilot-resume
 
-2. Install Dependencies
-npm install
+🛠️ 2. Backend (AWS Lambda Setup)
+Install dependencies inside backend folder:
+cd backend
+pip install -r requirements.txt -t .
+zip -r resume_lambda.zip .
 
-3. AWS Configuration
-Create an IAM User
 
-Give access to the following:
+Upload this ZIP to AWS Lambda.
 
-AmazonRekognitionFullAccess
+Lambda Environment Variables:
+AWS_REGION=ap-south-1
+S3_BUCKET=<your-s3-bucket>
+
+Required IAM Permissions:
 
 AmazonBedrockFullAccess
 
-AmazonTextractFullAccess
-
 AmazonS3FullAccess
 
-Then generate:
+AWSLambdaBasicExecutionRole
 
-Access Key ID
+🖥️ 3. Frontend (Streamlit UI Setup)
+Install dependencies:
+cd frontend
+pip install -r requirements.txt
 
-Secret Access Key
+Run app:
+streamlit run streamlit_app.py
 
-4. Setup Environment Variables
+📡 API Request / Response Example
+Request sent by Streamlit:
+{
+  "name": "Krishna",
+  "email": "krishna@example.com",
+  "phone": "9876543210",
+  "summary": "Enthusiastic cloud developer...",
+  "skills": "Python, AWS, Streamlit",
+  "education": "B.Tech CSE",
+  "projects": "Resume Builder - AI-powered - Python/CSS",
+  "certifications": "AWS Cloud Practitioner"
+}
 
-Create .env.local file:
+Lambda Response:
+{
+  "resume_url": "https://your-bucket.s3.amazonaws.com/krishna_resume.pdf"
+}
 
-cp .env.example .env.local
+🔮 Future Enhancements
 
+You can mention these in viva/hackathon:
 
-Update with your actual values:
+Multiple resume templates
 
-# AWS Credentials
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-AWS_REGION=us-west-2
+Resume ATS Scoring
 
-# S3 Bucket
-AWS_S3_BUCKET_NAME=your-bucket
-AWS_S3_REGION=us-east-1
+Cover Letter Generator
 
-# App Config
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+Job Description Matching
 
+LinkedIn Data Import
 
-⚠️ Make sure the S3 bucket exists in the defined region.
+Dark/Light Theme
 
-5. Run the App
-npm run dev
+Multi-language resume support
 
+📝 Conclusion
 
-Open the app in browser:
+Your project is a complete, production-style GenAI Resume Builder featuring:
 
-👉 http://localhost:3000
+✔ AI content generation
+✔ Serverless backend
+✔ Clean corporate frontend
+✔ Automated PDF generation
+✔ Secure cloud storage
 
-📂 Folder Structure
-├── app/
-│   ├── api/            # Authentication, Interview, Verification APIs
-│   ├── dashboard/      # User Dashboard UI
-│   ├── interview/      # Interview Coach Pages
-│   ├── login/          # Login / Registration
-│   └── verification/   # Document Verification UI
-├── components/         # CameraCapture, AWS Icons, UI components
-├── lib/                # AWS clients & utilities
-├── public/             # Static assets
-└── aws/                # AWS policy references, setup guides
+This is a strong, real-world portfolio project demonstrating skills in:
 
-🔒 Security Notes
+AWS
 
-All biometric data (face images) are stored in your private S3 bucket.
+Generative AI
 
-No face data is shared externally.
+Python
 
-Follow local laws regarding biometric authentication.
+Streamlit
+
+PDF Automation
+
+Serverless Architecture
