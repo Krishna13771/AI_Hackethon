@@ -1,136 +1,165 @@
-🚀 AI Resume Generator – Career Copilot
+🚀 Features
+1. AI-Powered Resume Builder
 
-This project is a Generative AI–powered Resume Builder that automatically creates ATS-friendly PDF resumes based on user inputs.
-It uses a Streamlit frontend, a serverless AWS backend, and AI content generation via Amazon Bedrock.
+Technology: Amazon Bedrock (Claude/Titan)
 
-Users simply enter their details → The system generates → A downloadable PDF resume is instantly created and stored in S3.
+Functionality:
 
-⭐ Features (Exactly Your Project)
-1️⃣ Streamlit Frontend (Corporate UI)
+Generates a professional, clean, ATS-friendly resume from user input.
 
-Clean, professional design
+Converts bullet points, skills, and project descriptions into HR-grade phrasing.
 
-Gradient corporate background
+Structures resume sections automatically:
+✓ Summary
+✓ Skills
+✓ Education
+✓ Projects
+✓ Certifications
 
-Card-based form layout
+Benefits:
 
-User inputs:
+Saves time
 
-Name
+Ensures ATS compliance
 
-Email
+Removes formatting burden
 
-Phone
+2. Corporate-Grade UI
 
-Summary
+Technology: Streamlit + Custom CSS
 
-Skills
+UI Features:
 
-Education
+Clean corporate gradient background
 
-Projects
+White glass-style cards
 
-Certifications
+Modern blue-accent buttons
 
-2️⃣ AI Resume Generation (Amazon Bedrock)
+Professional input structure
 
-Takes user inputs
+Download link interface
 
-Enhances content using AI
+User Experience:
 
-Produces professional, HR-friendly resume sections
+Simple, elegant, and business-ready.
 
-Ensures ATS-optimized writing (clear structure, bullet points, no images)
+3. Resume PDF Generation
 
-3️⃣ PDF Generation (pdfgen.py)
+Technology: Python (ReportLab/FPDF)
 
-Converts AI-generated text → Beautiful PDF
+Functionality:
 
-Uses simple, ATS-safe formatting
+Converts AI-generated text into a well-formatted PDF
 
-Handles:
+Ensures ATS readability (no tables/images)
 
-Line spacing
+Clear spacing, font consistency, hierarchy
 
-Font formatting
+Module: pdfgen.py
 
-Section separators
+Handles line-by-line PDF construction.
 
-4️⃣ AWS Lambda Backend
+4. Serverless Backend Architecture
 
-Your Lambda performs the pipeline:
+Technology: AWS Lambda + API Gateway
 
-Receive user input
+Functionality:
 
-Call Bedrock for AI content
+Accepts user data from frontend
 
-Generate PDF using pdfgen.py
+Calls Bedrock for resume generation
 
-Upload final PDF to S3
+Generates PDF
 
-Return a resume download URL to Streamlit
+Uploads resume to S3
 
-5️⃣ Amazon S3 Storage
+Returns downloadable URL to the frontend
 
-Stores generated PDF safely
+Benefits:
 
-Provides public or presigned URL for download
+Fully serverless
 
-Files named dynamically using username
+Scalable
 
-🏗️ Architecture Overview
-Streamlit UI (User Form)
-        ↓
+Cost-efficient
+
+5. Secure Resume Storage
+
+Technology: Amazon S3
+
+Functionality:
+
+Stores generated PDF securely
+
+Provides temporary or public URL to download
+
+Ensures privacy of user data
+
+🛠️ Tech Stack
+Frontend
+
+Streamlit
+
+HTML/CSS (Custom Theme)
+
+Form-based UI
+
+Backend
+
+AWS Lambda (Python)
+
 API Gateway
-        ↓
-AWS Lambda (lambda_function.py)
-        ↓
-Bedrock (AI Text Generation)
-        ↓
-pdfgen.py (PDF Creator)
-        ↓
-Amazon S3 (Stores Resume)
-        ↓
-Streamlit (Download Resume Link)
 
-📂 Project Structure
-career-copilot-resume/
-│
-├── backend/
-│   ├── lambda_function.py        # Main Lambda logic
-│   ├── bedrock_client.py         # Bedrock API call logic
-│   ├── pdfgen.py                 # Converts AI output into PDF
-│   ├── utils.py                  # Helper functions
-│   ├── requirements.txt          # Python libs for Lambda
-│   └── resume_lambda.zip         # Deployment package
-│
-├── frontend/
-│   └── streamlit_app.py          # UI and API request handler
-│
-├── deploy/
-│   └── template.yaml             # (Optional) SAM deployment file
-│
-└── README.md
+Amazon Bedrock (Generative AI)
+
+Amazon S3 (PDF storage)
+
+Libraries
+
+requests
+
+boto3
+
+FPDF or ReportLab
+
+Python 3.10+
+
+🧩 Project Architecture
+User → Streamlit UI → API Gateway → Lambda → Bedrock (AI)
+                                            ↓
+                                         pdfgen.py
+                                            ↓
+                                           S3
+                                            ↓
+                           Streamlit shows downloadable PDF link
 
 ⚙️ Setup Instructions
-🛠️ 1. Clone the Repository
-git clone <your-repo-url>
+1. Clone Repository
+git clone <repo-url>
 cd career-copilot-resume
 
-🛠️ 2. Backend (AWS Lambda Setup)
-Install dependencies inside backend folder:
+2. Create Virtual Environment (Optional but Recommended)
+python -m venv .venv
+source .venv/bin/activate    # macOS/Linux
+.venv\Scripts\activate       # Windows
+
+3. Install Frontend Dependencies
+cd frontend
+pip install -r requirements.txt
+
+4. Set Up Backend for AWS Lambda
+Navigate to backend folder:
 cd backend
 pip install -r requirements.txt -t .
 zip -r resume_lambda.zip .
 
 
-Upload this ZIP to AWS Lambda.
+Upload resume_lambda.zip to AWS Lambda.
 
-Lambda Environment Variables:
-AWS_REGION=ap-south-1
-S3_BUCKET=<your-s3-bucket>
+5. Configure Environment Variables (AWS Credentials)
 
-Required IAM Permissions:
+You need IAM permissions for:
 
 AmazonBedrockFullAccess
 
@@ -138,70 +167,65 @@ AmazonS3FullAccess
 
 AWSLambdaBasicExecutionRole
 
-🖥️ 3. Frontend (Streamlit UI Setup)
-Install dependencies:
-cd frontend
-pip install -r requirements.txt
+Inside Lambda → Configuration → Environment Variables:
 
-Run app:
+AWS_REGION=ap-south-1
+S3_BUCKET=your-resume-bucket
+
+6. Run the Frontend
+cd frontend
 streamlit run streamlit_app.py
 
-📡 API Request / Response Example
-Request sent by Streamlit:
-{
-  "name": "Krishna",
-  "email": "krishna@example.com",
-  "phone": "9876543210",
-  "summary": "Enthusiastic cloud developer...",
-  "skills": "Python, AWS, Streamlit",
-  "education": "B.Tech CSE",
-  "projects": "Resume Builder - AI-powered - Python/CSS",
-  "certifications": "AWS Cloud Practitioner"
-}
 
-Lambda Response:
-{
-  "resume_url": "https://your-bucket.s3.amazonaws.com/krishna_resume.pdf"
-}
+Streamlit output:
 
-🔮 Future Enhancements
+Local URL: http://localhost:8503
+Network URL: http://10.x.x.x:8503
 
-You can mention these in viva/hackathon:
+📂 Project Structure
+career-copilot-resume/
+│
+├── backend/
+│   ├── lambda_function.py        # Main Lambda Handler
+│   ├── bedrock_client.py         # AI integration logic
+│   ├── pdfgen.py                 # PDF generator
+│   ├── utils.py                  # Helper methods
+│   ├── requirements.txt
+│   └── resume_lambda.zip         # Lambda deployment package
+│
+├── frontend/
+│   └── streamlit_app.py          # Streamlit corporate UI
+│
+├── deploy/
+│   └── template.yaml             # AWS SAM deployment template
+│
+└── README.md
 
-Multiple resume templates
+🔒 Security Note
 
-Resume ATS Scoring
+This project handles user resume data.
+To protect privacy:
 
-Cover Letter Generator
+Use private S3 buckets
 
-Job Description Matching
+Enable least-privilege IAM roles
 
-LinkedIn Data Import
+Do NOT log sensitive user info
 
-Dark/Light Theme
+URLs can be presigned URLs for temporary access
 
-Multi-language resume support
+🌟 Future Enhancements
 
-📝 Conclusion
+Multiple resume design templates
 
-Your project is a complete, production-style GenAI Resume Builder featuring:
+Job description → auto-optimized resume
 
-✔ AI content generation
-✔ Serverless backend
-✔ Clean corporate frontend
-✔ Automated PDF generation
-✔ Secure cloud storage
+ATS score calculator
 
-This is a strong, real-world portfolio project demonstrating skills in:
+Real-time grammar checking
 
-AWS
+Cover letter generator
 
-Generative AI
+Built-in LinkedIn profile importer
 
-Python
-
-Streamlit
-
-PDF Automation
-
-Serverless Architecture
+User account system
